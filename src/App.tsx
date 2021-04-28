@@ -3,7 +3,7 @@ import logo from "./logo.svg";
 import "./App.css";
 
 import Dashboard from "./pages/Dashboard";
-import Users from "./pages/Users";
+import Users from "./pages/users/Users";
 import { BrowserRouter, Route } from "react-router-dom";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
