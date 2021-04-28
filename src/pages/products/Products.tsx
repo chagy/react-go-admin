@@ -1,0 +1,113 @@
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import Wrapper from "../../components/Wrapper";
+import { Product } from "../../models/Product";
+
+const Products = () => {
+  const [products, setProducts] = useState([]);
+  const [page, setPage] = useState(1);
+  const [lastPage, setLastPage] = useState(0);
+  useEffect(() => {
+    (async () => {
+      const { data } = await axios.get(`products?page=${page}`);
+
+      setProducts(data.data);
+      setLastPage(data.meta.last_page);
+    })();
+  }, [page]);
+
+  const next = () => {
+    if (page <= lastPage) {
+      setPage(page + 1);
+    }
+  };
+
+  const prev = () => {
+    if (page >= 1) {
+      setPage(page - 1);
+    }
+  };
+
+  const del = async (id: number) => {
+    if (window.confirm("Are you sure ?")) {
+      await axios.delete(`products/${id}`);
+
+      setProducts(products.filter((p: Product) => p.id !== id));
+    }
+  };
+  return (
+    <Wrapper>
+      <>
+        <div className="pt-3 pb-2 mb-3 border-bottom">
+          <Link
+            to={"/products/create"}
+            className="btn btn-sm btn-outline-secondary"
+          >
+            Add
+          </Link>
+        </div>
+        <div className="table-responsive">
+          <table className="table table-striped table-sm">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Image</th>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {products.map((p: Product) => {
+                return (
+                  <tr key={p.id}>
+                    <td>{p.id}</td>
+                    <td>
+                      <img src={p.image} width="50" />
+                    </td>
+                    <td>{p.title}</td>
+                    <td>{p.description}</td>
+                    <td>{p.price}</td>
+                    <td>
+                      <Link
+                        to={`/products/${p.id}/edit`}
+                        className="btn btn-sm btn-outline-secondary"
+                      >
+                        Edit
+                      </Link>
+                      <a
+                        href="#"
+                        onClick={() => del(p.id)}
+                        className="btn btn-sm btn-outline-secondary"
+                      >
+                        Delete
+                      </a>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+        <nav>
+          <ul className="pagination">
+            <li className="page-item">
+              <a className="page-link" onClick={prev}>
+                Previous
+              </a>
+            </li>
+            <li className="page-item">
+              <a className="page-link" onClick={next}>
+                Next
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </>
+    </Wrapper>
+  );
+};
+
+export default Products;
