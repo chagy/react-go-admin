@@ -1,19 +1,34 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { Redirect } from "react-router";
+import {User} from "../models/User"
 
 const Nav = () => {
-  const [user,setUser] = useState({
-    first_name: ''
-  })
+  const [user,setUser] = useState(new User())
+  const [redirect,setRedirect] = useState(false)
 
   useEffect(() => {
     (
       async() => {
         const { data } = await axios.get(`user`,{withCredentials:true});
-        setUser(data);
+        setUser(new User(
+          data.id,
+          data.first_name,
+          data.last_name,
+          data.email,
+        ));
       }
     )();
   }, [])
+
+  const logout = async() => {
+    await axios.post("logout",{})
+    setRedirect(true)
+  }
+
+  if(redirect){
+    return <Redirect to="/login" />
+  }
 
   return (
     <>
@@ -24,8 +39,8 @@ const Nav = () => {
         <ul className="navbar-nav px-3">
           {user ? (
             <li className="nav-item">
-              <a className="nav-link" href="#">
-                {user.first_name} Sign out
+              <a className="nav-link" onClick={logout}>
+                {user.name} Sign out
               </a>
             </li>
           ) : (

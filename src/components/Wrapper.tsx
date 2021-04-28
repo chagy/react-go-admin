@@ -1,4 +1,6 @@
-import React from "react";
+import axios from "axios";
+import React, { useEffect,useState } from "react";
+import { Redirect } from "react-router";
 import Menu from "./Menu";
 import Nav from "./Nav";
 
@@ -7,6 +9,23 @@ type Props = {
 };
 
 const Wrapper = ({ children }: Props) => {
+  const [redirect,setRedirect] = useState(false);
+
+  useEffect(() => {
+    (
+      async() => {
+        try {
+          const {data} = await axios.get('user');
+
+        }catch(e){
+          setRedirect(true)
+        }
+      }
+    )()
+  }, [])
+  if(redirect){
+    return <Redirect to="/login" />
+  }
   return (
     <>
       <Nav />
